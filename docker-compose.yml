@@ -2,26 +2,19 @@ version: '3'
 
 services:
   selenium:
-    # image: seleniarm/standalone-chromium # if M2 Mac
-    image: selenium/standalone-chrome # if other
+    image: seleniarm/standalone-chromium # if M2 Mac
+    # image: selenium/standalone-chrome # if other
+    hostname: selenium
     ports:
       - "4444:4444"
     volumes:
       - ./downloads:/home/seluser/downloads
-
-  chrome:
-    image: selenium/node-chrome
-    depends_on:
-      - selenium
-    environment:
-      - SE_EVENT_BUS_HOST=selenium
-    volumes:
       - /dev/shm:/dev/shm
 
   ruby:
     build: .
     depends_on:
-      - chrome
+      - selenium
     env_file:
       - .env.local
     environment:
