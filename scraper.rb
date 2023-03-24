@@ -52,6 +52,8 @@ class Scraper
       end
       csv_rows.reverse!
 
+      puts 'csv_rows = ' + csv_rows.to_s
+
       before_hash = ''
       save_text_file_name = 'before_hash.txt'
       File.open(save_text_file_name, 'r') do |file|
