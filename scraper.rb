@@ -52,7 +52,7 @@ class Scraper
       end
       csv_rows.reverse!
 
-      puts 'csv_rows = ' + csv_rows.to_s
+      puts "csv_rows: #{csv_rows}"
 
       before_hash = ''
       save_text_file_name = 'before_hash.txt'
@@ -94,14 +94,14 @@ class Scraper
       slacl_post({
         channel: ENV.fetch('SUCCESS_CHANNEL'),
         text: text,
-        icon_url: ENV.fetch('SUCCESS_ICNO_URL')
+        icon_url: ENV.fetch('SUCCESS_ICON_URL')
       }) if text != ''
     rescue => e
       if count < 1
         slacl_post({
-          channel: ENV.fetch('ERROR_ICNO_URL'),
+          channel: ENV.fetch('ERROR_ICON_URL'),
           text: "取得できなかったためログの確認をお願いいたします(´･ω･`)",
-          icon_url: ENV.fetch('ERROR_ICNO_URL')
+          icon_url: ENV.fetch('ERROR_ICON_URL')
         })
         raise e
       else
