@@ -2,13 +2,13 @@ version: '3'
 
 services:
   selenium:
-    image: seleniarm/standalone-chromium # if M2 Mac
-    # image: selenium/standalone-chrome # if other
+    # image: seleniarm/standalone-chromium # if M2 Mac
+    image: selenium/standalone-chrome # if other
     hostname: selenium
     ports:
       - "4444:4444"
     volumes:
-      - ./downloads:/home/seluser/downloads
+      - ./downloads:/home
       - /dev/shm:/dev/shm
 
   ruby:
