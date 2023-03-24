@@ -18,12 +18,18 @@ jobs:
         run: docker compose up -d
       - name: run Docker running checker
         run: ./docker_check.sh
-      - name: git setting
+      - name: Diff
+        id: diff
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-      - name: commit files
+          git add -N .
+          git diff --name-only --exit-code
+        continue-on-error: true
+      - name: Commit & Push
         run: |
-          git add -A
-          if ! git diff-index --quiet HEAD --; then git commit -am "Update before_hash (By GitHub Actions)"; fi;
+          set -x
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add .
+          git commit --author=. -m 'Update before_hash'
           git push
+        if: steps.diff.outcome == 'failure'
