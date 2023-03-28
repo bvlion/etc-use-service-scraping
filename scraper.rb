@@ -14,9 +14,10 @@ class Scraper
     @options = Selenium::WebDriver::Chrome::Options.new.tap do |option|
       option.add_argument('--window-size=500,1200')
       option.add_argument('--headless')
+      option.add_argument("--no-sandbox")
       option.add_preference(:download, {
         'prompt_for_download'=> false,
-        'default_directory' => '/home/seluser/downloads',
+        'default_directory' => '/app/downloads',
         'directory_upgrade' => true
       })
     end
@@ -121,7 +122,7 @@ class Scraper
   end
 
   def setup_driver
-    @driver = Selenium::WebDriver.for(:remote, options: options, url: "http://#{ENV.fetch('SELENIUM_HOST')}/wd/hub")
+    @driver = Selenium::WebDriver.for(:chrome, options: options)
     driver.manage.timeouts.implicit_wait = 10
     sleep 1
   end

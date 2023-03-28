@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - "main"
-  # schedule:
-  #   - cron: '11 * * * *'
+  schedule:
+    - cron: '11 * * * *'
 
 jobs:
   exec-docker:
@@ -15,12 +15,8 @@ jobs:
       - name: setup env
         run: echo ${{ secrets.ENV_BASE64 }} | base64 -d > .env.local
       - name: run Docker
-        run: docker-compose up -d
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
-      - name: run Docker running checker
-        run: ./docker_check.sh
+        run: docker-compose up
+ 
       - name: Diff
         id: diff
         run: |
