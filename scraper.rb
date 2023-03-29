@@ -53,7 +53,7 @@ class Scraper
       end
       csv_rows.reverse!
 
-      puts "csv_rows: #{csv_rows}"
+      puts "csv_rows is empty" if csv_rows.empty?
 
       before_hash = ''
       save_text_file_name = 'before_hash.txt'
@@ -90,7 +90,7 @@ class Scraper
         text << latest_text
       end
 
-      puts text if text != ''
+      puts "text.length is #{text.length}"
 
       slacl_post({
         channel: ENV.fetch('SUCCESS_CHANNEL'),
