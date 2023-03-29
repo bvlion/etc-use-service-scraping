@@ -106,7 +106,7 @@ class Scraper
         })
         raise e
       else
-        print "Retry :: #{count} \n"
+        puts "Retry :: #{count}"
         driver.close()
         setup_driver()
         scrape(count - 1)
@@ -122,7 +122,11 @@ class Scraper
   end
 
   def setup_driver
-    @driver = Selenium::WebDriver.for(:chrome, options: options)
+    if ENV.fetch('M1_LOCAL') {'false'} == 'true'
+      @driver = Selenium::WebDriver.for(:remote, options: options, url: "http://#{ENV.fetch('SELENIUM_HOST')}/wd/hub")
+    else
+      @driver = Selenium::WebDriver.for(:chrome, options: options)
+    end
     driver.manage.timeouts.implicit_wait = 10
     sleep 1
   end
