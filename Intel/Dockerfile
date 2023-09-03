@@ -8,7 +8,8 @@ RUN apt-get install -y google-chrome-stable libnss3 libgconf-2-4
 RUN CHROMEDRIVER_VERSION=`curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE` \
  && curl -sS -o /tmp/chromedriver_linux64.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip
 RUN unzip /tmp/chromedriver_linux64.zip
-RUN mv chromedriver /usr/local/bin/
+RUN mv chromedriver-linux64/chromedriver /usr/local/bin/
+RUN rm -rf chromedriver-linux64
 
 RUN gem install bundler
 
