@@ -64,7 +64,10 @@ class Scraper
       text = ''
       csv_rows.each_with_index do |row, i|
 
-        latest_text = '入: ' + row[0] + ' ' + row[1]
+        latest_text = '入: '
+        if row[0] != nil && row[1] != nil
+          latest_text << row[0] + ' ' + row[1]
+        end
         if row[4] != nil
           latest_text << ' = ' + row[4].encode("UTF-8")
         end
