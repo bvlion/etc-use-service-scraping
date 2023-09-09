@@ -21,11 +21,11 @@ class Scraper
         'directory_upgrade' => true
       })
     end
-    setup_driver()
   end
 
-  def scrape(count = 5)
+  def scrape
     begin
+      setup_driver()
       puts 'start scraping'
       
       driver.get('https://www2.etc-meisai.jp/etc/R?funccode=1013000000&nextfunc=1013000000')
@@ -101,19 +101,11 @@ class Scraper
         icon_url: ENV.fetch('SUCCESS_ICON_URL')
       }) if text != ''
     rescue => e
-      if count < 1
-        slacl_post({
-          channel: ENV.fetch('ERROR_ICON_URL'),
-          text: "取得できなかったためログの確認をお願いいたします(´･ω･`)",
-          icon_url: ENV.fetch('ERROR_ICON_URL')
-        })
-        raise e
-      else
-        puts "Retry :: #{count}"
-        driver.close()
-        setup_driver()
-        scrape(count - 1)
-      end
+      slacl_post({
+        channel: ENV.fetch('ERROR_CHANNEL'),
+        text: "取得できなかったためエラーメッセージの確認をお願いいたします(´･ω･`)\n\n#{e.message}",
+        icon_url: ENV.fetch('ERROR_ICON_URL')
+      })
     end
   end
 
