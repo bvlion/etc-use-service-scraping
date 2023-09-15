@@ -5,9 +5,11 @@ RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' |
 RUN apt-get update -qq
 RUN apt-get install -y google-chrome-stable libnss3 libgconf-2-4
 RUN CHROME_MAJOR_VERSION=$(google-chrome --version | grep -oE "[0-9]+" | head -1)
+RUN echo $CHROME_MAJOR_VERSION
 
-RUN CHROMEDRIVER_VERSION=`curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_MAJOR_VERSION` \
- && curl -sS -o /tmp/chromedriver_linux64.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip
+RUN CHROMEDRIVER_VERSION=`curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_MAJOR_VERSION`
+RUN echo $CHROMEDRIVER_VERSION
+RUN curl -sS -o /tmp/chromedriver_linux64.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip
 RUN unzip /tmp/chromedriver_linux64.zip
 RUN mv chromedriver-linux64/chromedriver /usr/local/bin/
 RUN rm -rf chromedriver-linux64
