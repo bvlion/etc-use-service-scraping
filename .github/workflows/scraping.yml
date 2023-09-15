@@ -16,7 +16,7 @@ jobs:
       - name: setup env
         run: echo ${{ secrets.ENV_BASE64 }} | base64 -d > .env.local
       - name: run Docker
-        run: cd Intel && docker-compose up --build --no-cache
+        run: cd Intel && docker-compose build --no-cache && docker-compose up
  
       - name: Diff
         id: diff
