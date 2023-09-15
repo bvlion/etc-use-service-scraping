@@ -5,6 +5,7 @@ services:
     build:
       context: ../
       dockerfile: Intel/Dockerfile
+      no_cache: true
     env_file:
       - ../.env.local
     volumes:
