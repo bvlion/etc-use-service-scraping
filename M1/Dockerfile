@@ -7,5 +7,5 @@ COPY . /app
 
 RUN bundle install
 
-# CMD ["ruby", "scraper.rb"]
-CMD /bin/sh -c "while sleep 1000; do :; done"
+CMD ["ruby", "scraper.rb"]
+# CMD /bin/sh -c "while sleep 1000; do :; done"

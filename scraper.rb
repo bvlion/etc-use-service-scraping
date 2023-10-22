@@ -72,10 +72,19 @@ class Scraper
           latest_text << ' = ' + row[4].encode("UTF-8")
         end
         latest_text << "\n"
+
         latest_text << '出: ' + row[2] + ' ' + row[3]
         if row[5] != nil
           latest_text << ' = ' + row[5].encode("UTF-8")
         end
+        latest_text << "\n"
+
+        latest_text << '暫定金額: '
+        if row[8] != nil
+          latest_text << row[8].to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\1,') + ' 円'
+        end
+        latest_text << "\n"
+
         digest = Digest::SHA256.hexdigest(latest_text)
 
         if before_hash == digest
