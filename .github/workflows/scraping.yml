@@ -6,6 +6,7 @@ on:
       - "main"
   schedule:
     - cron: '11 * * * *'
+  workflow_dispatch:
 
 jobs:
   exec-docker:
