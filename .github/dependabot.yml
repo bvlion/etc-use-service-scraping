@@ -6,4 +6,3 @@ updates:
       interval: "daily"
       time: "11:40"
       timezone: "Asia/Tokyo"
-    reviewers: "bvlion"
