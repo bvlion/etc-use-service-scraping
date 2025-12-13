@@ -24,6 +24,8 @@ class Scraper
   end
 
   def scrape
+    is_pull_request = ENV.fetch('GITHUB_EVENT_NAME', '') == 'pull_request'
+    pull_request_number = ENV.fetch('GITHUB_REF', '').match(/refs\/pull\/(\d+)\//)&.captures&.first || 'unknown'
     begin
       setup_driver()
       puts 'start scraping'
@@ -104,17 +106,33 @@ class Scraper
 
       puts "text.length is #{text.length}"
 
-      slack_post({
-        channel: ENV.fetch('SUCCESS_CHANNEL'),
-        text: text,
-        icon_url: ENV.fetch('SUCCESS_ICON_URL')
-      }) if text != ''
+      if is_pull_request
+        slack_post({
+          channel: ENV.fetch('ERROR_CHANNEL'),
+          text: "##{pull_request_number} の PR がマージできます",
+          icon_url: ENV.fetch('SUCCESS_ICON_URL')
+        })
+      else
+        slack_post({
+          channel: ENV.fetch('SUCCESS_CHANNEL'),
+          text: text,
+          icon_url: ENV.fetch('SUCCESS_ICON_URL')
+        }) if text != ''
+      end
     rescue => e
-      slack_post({
-        channel: ENV.fetch('ERROR_CHANNEL'),
-        text: "取得できなかったためエラーメッセージの確認をお願いいたします(´･ω･`)\n\n#{e.message}",
-        icon_url: ENV.fetch('ERROR_ICON_URL')
-      })
+      if is_pull_request
+        slack_post({
+          channel: ENV.fetch('ERROR_CHANNEL'),
+          text: "##{pull_request_number} の PR はマージできません\n\n#{e.message}",
+          icon_url: ENV.fetch('ERROR_ICON_URL')
+        })
+      else
+        slack_post({
+          channel: ENV.fetch('ERROR_CHANNEL'),
+          text: "取得できなかったためエラーメッセージの確認をお願いいたします(´･ω･`)\n\n#{e.message}",
+          icon_url: ENV.fetch('ERROR_ICON_URL')
+        })
+      end
     end
   end
 
