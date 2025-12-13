@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+  pull_request:
   schedule:
     - cron: '11 * * * *'
   workflow_dispatch:
@@ -36,4 +37,4 @@ jobs:
           git add .
           git commit --author='bvlion <bvltiggeari@ambitious-i.net>' -m 'Update before_hash'
           git push
-        if: steps.diff.outcome == 'failure'
+        if: steps.diff.outcome == 'failure' && github.event_name != 'pull_request'

@@ -104,13 +104,13 @@ class Scraper
 
       puts "text.length is #{text.length}"
 
-      slacl_post({
+      slack_post({
         channel: ENV.fetch('SUCCESS_CHANNEL'),
         text: text,
         icon_url: ENV.fetch('SUCCESS_ICON_URL')
       }) if text != ''
     rescue => e
-      slacl_post({
+      slack_post({
         channel: ENV.fetch('ERROR_CHANNEL'),
         text: "取得できなかったためエラーメッセージの確認をお願いいたします(´･ω･`)\n\n#{e.message}",
         icon_url: ENV.fetch('ERROR_ICON_URL')
@@ -118,7 +118,7 @@ class Scraper
     end
   end
 
-  def slacl_post(data)
+  def slack_post(data)
     data.store('username', 'ETC 利用明細 scraper')
     request_url = ENV.fetch('SLACK_WEBHOOK_URL')
     uri = URI.parse(request_url)
