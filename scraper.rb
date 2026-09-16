@@ -34,12 +34,17 @@ class Scraper
       driver.find_element(:name, "risLoginId").send_keys ENV.fetch("USER_ID")
       driver.find_element(:name, "risPassword").send_keys ENV.fetch("PASSWORD")
       driver.find_element(:name, "focusTarget").click
-      sleep 1
+
+      wait = Selenium::WebDriver::Wait.new(timeout: 30)
+      wait.until do
+        driver.execute_script("return typeof submitOpenPage === 'function'")
+      end
 
       driver.execute_script("submitOpenPage('frm', '/etc/R?funccode=1013000000&nextfunc=1013500000', 'self')")
-      sleep 2
 
-      driver.find_element(:xpath, '/html/body/center/div[2]/ul/li[6]/a').click()
+      wait.until do
+        driver.find_element(:xpath, '/html/body/center/div[2]/ul/li[6]/a')
+      end.click()
       sleep 1
 
       driver.close()
