@@ -12,6 +12,7 @@ GEM
     websocket (1.2.11)
 
 PLATFORMS
+  aarch64-linux
   aarch64-linux-musl
   x86_64-linux
 
