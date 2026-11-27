@@ -1,48 +1,21 @@
 name: scraping
 
 on:
-  push:
-    branches:
-      - "main"
-  pull_request:
-  schedule:
-    - cron: '11 * * * *'
   workflow_dispatch:
 
 jobs:
-  exec-docker:
+  diagnose-login:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-     
-      - name: setup env
-        env:
-          ENV_BASE64: ${{ secrets.ENV_BASE64 }}
+      - name: Probe HTTP from runner
+        run: bash .github/probe-login.sh
+      - name: Build current Intel image
+        run: docker build -q -t etc-login-probe -f Intel/Dockerfile .
+      - name: Probe HTTP and Chrome from container
         run: |
-          printf '%s' "$ENV_BASE64" | base64 -d > .env.local
-          echo "GITHUB_EVENT_NAME=${{ github.event_name }}" >> .env.local
-          echo "GITHUB_REF=${{ github.ref }}" >> .env.local
-
-      - name: run Docker
-        working-directory: Intel
-        run: |
-          docker compose build --no-cache
-          docker compose run --rm -T ruby
- 
-      - name: Diff
-        id: diff
-        run: |
-          git add -N .
-          git diff --name-only --exit-code
-        continue-on-error: true
-
-      - name: Commit & Push
-        run: |
-          set -x
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git add .
-          git commit --author='bvlion <bvltiggeari@ambitious-i.net>' -m 'Update before_hash'
-          git push
-        if: steps.diff.outcome == 'failure' && github.event_name != 'pull_request'
+          docker run --rm -v "$PWD/.github:/probe:ro" etc-login-probe bash /probe/probe-login.sh
+          docker run --rm -v "$PWD/.github:/probe:ro" etc-login-probe bundle exec ruby /probe/probe-login.rb
