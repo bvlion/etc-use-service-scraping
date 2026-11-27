@@ -30,6 +30,9 @@ class Scraper
         service_page: location.hostname === 'www2.etc-meisai.jp',
         document_ready: document.readyState === 'complete',
         login_form: document.querySelector('[name="risLoginId"], [name="risPassword"]') !== null,
+        login_ready: document.querySelector('[name="risLoginId"]') !== null &&
+          document.querySelector('[name="risPassword"]') !== null &&
+          document.querySelector('[name="focusTarget"]') !== null && typeof submitPage === 'function',
         navigation_function: typeof submitOpenPage === 'function',
         download_link: document.evaluate(arguments[0], document, null,
           XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue !== null
@@ -55,15 +58,24 @@ class Scraper
       chrome_driver_version = capabilities['chrome']&.fetch('chromedriverVersion', nil).to_s[/\A\d+(?:\.\d+)+/] || 'unavailable'
       puts "chrome=#{chrome_version} chromedriver=#{chrome_driver_version}"
 
+      wait = Selenium::WebDriver::Wait.new(timeout: 30)
+      stage, stage_line = 'login_page', __LINE__
+      puts "stage=#{stage}"
+      login_page_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      driver.get('https://www2.etc-meisai.jp/etc/R?funccode=1013000000&nextfunc=1013000000')
+      wait.until do
+        screen_state = driver.execute_script(screen_state_script, download_link_xpath)
+        screen_state.fetch('service_page') && screen_state.fetch('login_ready')
+      end
+      login_page_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - login_page_started_at
+      puts "login_page=ready elapsed_seconds=#{login_page_elapsed.round(2)}"
+
       stage, stage_line = 'login', __LINE__
       puts "stage=#{stage}"
-      driver.get('https://www2.etc-meisai.jp/etc/R?funccode=1013000000&nextfunc=1013000000')
-      screen_state = driver.execute_script(screen_state_script, download_link_xpath)
       driver.find_element(:name, "risLoginId").send_keys ENV.fetch("USER_ID")
       driver.find_element(:name, "risPassword").send_keys ENV.fetch("PASSWORD")
       driver.find_element(:name, "focusTarget").click
 
-      wait = Selenium::WebDriver::Wait.new(timeout: 30)
       wait.until do
         screen_state = driver.execute_script(screen_state_script, download_link_xpath)
         screen_state.fetch('navigation_function') && !screen_state.fetch('login_form')
@@ -226,7 +238,9 @@ class Scraper
     if ENV.fetch('M1_LOCAL') {'false'} == 'true'
       @driver = Selenium::WebDriver.for(:remote, options: options, url: "http://#{ENV.fetch('SELENIUM_HOST')}/wd/hub")
     else
+      options.page_load_strategy = :eager
       @driver = Selenium::WebDriver.for(:chrome, options: options)
+      driver.manage.timeouts.page_load = 30
     end
     driver.manage.timeouts.implicit_wait = 10
     sleep 1
